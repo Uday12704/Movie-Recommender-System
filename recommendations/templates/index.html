@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            outline: none;
+            scroll-behavior: smooth;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            animation: fadeIn 1s;
+        }
+
+        #bg-img {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('static/images/bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: brightness(40%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #container {
+            margin: 50px auto;
+            width: 60%;
+            background: #222f3c;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 25px #00B87B;
+            transition: transform 0.3s; /* Smooth scaling on hover */
+        }
+
+        h2 {
+            font-size: 40px;
+            color: #00B87B;
+            margin: 30px 0 0 0;
+        }
+
+        #container:hover {
+            transform: scale(1.02);
+        }
+
+        input {
+            width: 80%;
+            font-size: 20px;
+            padding: 15px;
+            margin: 20px 0 30px 0;
+            border: 1px solid #222f3c;
+            border-radius: 5px;
+            background: #263940;
+            color: white;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #00B87B; /* Change border color on focus */
+            outline: none; /* Remove default outline */
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 0 0 20px 0;
+            background-color: #00B87B;
+            color: #263940;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px #00B87B;
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        #results {
+            margin-top: 20px;
+            animation: slideIn 0.5s; /* Slide-in animation for results */
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .movie {
+            background: #263940;
+            color: #00B87B;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #222f3c;
+            transition: transform 0.3s; /* Smooth scaling on hover */
+            text-align: left; /* Align text to the left */
+        }
+
+        .movie:hover {
+            transform: scale(1.02); /* Slightly enlarge on hover */
+            box-shadow: 0px 0px 15px #00B87B; /* Add shadow on hover */
+        }
+
+        .movie-info {
+            margin: 5px 0;
+        }
+
+        .poster {
+            width: 100%; /* Make the poster responsive */
+            max-width: 100px; /* Set a max width for the poster */
+            margin-bottom: 10px; /* Space below the poster */
+        }
+
+        .title {
+            color: #ffffff;
+            margin: 0 10px 5px 0;
+        }
+
+        .top {
+            color: #ffffff;
+            margin: 0 0 20px 0;
+        }
+
+
+        .tag {
+            margin: 15px 0 0 0;
+            font-size: 20px;
+            color: white;
+}
+    </style>
+</head>
+<body>
+    <div id="bg-img"></div>
+    <h2>Movie Recommendation System</h2>
+    <p class="tag">Finding Your Next Favorite Movie Has Never Been Easier!</p>
+    <div id="container">
+        <p class="tag">Sit Back, Relax, and Let Us Pick the Perfect Movie for You!</p>
+        <input type="text" id="movieInput" placeholder="Enter a movie title...">
+        <button onclick="getRecommendations()">Get Recommendations</button>
+        <div id="results"></div>
+        <button id="nextButton" style="display: none;" onclick="getNextRecommendations()">Any other</button>
+    </div>
+
+<script>
+    let currentOffset = 0; // Initialize offset
+
+    function getRecommendations() {
+        let title = document.getElementById("movieInput").value;
+        if (!title) {
+            alert("Please enter a movie title");
+            return;
+        }
+        fetch(`/recommend/?title=${encodeURIComponent(title)}&offset=${currentOffset}`)
+            .then(response => response.json())
+            .then(data => {
+                let resultsDiv = document.getElementById("results");
+                resultsDiv.innerHTML = "";
+                if (data.movies.length === 0) {
+                    resultsDiv.innerHTML = `<p style="color: #ffffff; font-size: 20px;">No recommendations found.</p>`;
+                } else {
+                    let top = document.createElement("div");
+                    top.innerHTML = `<h1 class="top">Recommended Movies</h1>`;
+                    resultsDiv.append(top);
+                    data.movies.forEach(movie => {
+                        let movieDiv = document.createElement("div");
+                        movieDiv.classList.add("movie");
+                        movieDiv.innerHTML = `
+                            <img src="${movie.Poster_Link}" alt="${movie.Series_Title} Poster" class="poster">
+                            <div class="movie-info"><strong class="title">Movie Name:</strong> ${movie.Series_Title}</div>
+                            <div class="movie-info"><strong class="title">Genre:</strong> ${movie.Genre}</div>
+                            <div class="movie-info"><strong class="title">IMDB Ratings:</strong> ${movie.IMDB_Rating}⭐/10</div>
+                            <div class="movie-info"><strong class="title">Director:</strong> ${movie.Director}</div>
+                            <div class="movie-info"><strong class="title">Overview:</strong> ${movie.Overview}</div>
+                        `;
+                        resultsDiv.appendChild(movieDiv);
+                    });
+                    currentOffset += 5; // Increment offset for next set
+                    document.getElementById("nextButton").style.display = "block"; // Show next button
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
+    function getNextRecommendations() {
+        window.scrollTo(0, 0); // Scroll to the top of the page
+        getRecommendations(); // Call the same function to fetch the next set
+    }
+</script>
+
+</body>
+</html>
