@@ -27,6 +27,7 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+PORT = int(os.environ.get('PORT', 8000))
 # Application definition
 
 INSTALLED_APPS = [
