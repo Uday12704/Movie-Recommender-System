@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-gym^00uj90e*a#byu^afot(3uoq#&0jd+5xb+hu_7e(__%*i&@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://movie-recommender-system-aodl.onrender.com', 'localhost']
-
+ALLOWED_HOSTS = ['movie-recommender-system.onrender.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
